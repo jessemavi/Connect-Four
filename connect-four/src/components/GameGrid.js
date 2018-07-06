@@ -5,10 +5,7 @@ import _ from 'lodash';
 class GameGrid extends Component {
   constructor(props) {
     super();
-    this.state = {
-      player1Color: 'blue',
-      player2Color: 'green',
-      currentPlayer: 'player1', 
+    this.state = { 
       grid: [
         [0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0],
@@ -23,6 +20,10 @@ class GameGrid extends Component {
   dropDisc = (row, column) => {
     // console.log(row, column);
 
+    if(!this.props.currentPlayer) {
+      return;
+    }
+
     // go through the column in the grid
     const { grid } = this.state;
 
@@ -30,32 +31,31 @@ class GameGrid extends Component {
 
     for(i = grid.length - 1; i >= 0; i--) {
       if(grid[i][column] === 0) {
-        if(this.state.currentPlayer === 'player1') {
-          grid[i][column] = this.state.player1Color;
+        if(this.props.currentPlayer === 'player1') {
+          grid[i][column] = this.props.player1Color;
           this.setState({
             grid: grid,
             currentPlayer: 'player2'
           });
-        } else if(this.state.currentPlayer === 'player2') {
-          grid[i][column] = this.state.player2Color;
+          this.props.updateCurrentPlayer('player2');
+        } else if(this.props.currentPlayer === 'player2') {
+          grid[i][column] = this.props.player2Color;
           this.setState({
-            grid: grid,
-            currentPlayer: 'player1'
+            grid: grid
           });
+          this.props.updateCurrentPlayer('player1');
         }
         break;
       }
     }
 
-    // console.log('row', i, 'column', column);
-
     // check for four in a row
-    this.checkVertically(column);
     if(i >= 0) {
+      this.checkVertically(column);
       this.checkHorizontally(i);
+      this.checkDiagonallyRight(i, column);
+      this.checkDiagonallyLeft(i, column);
     }
-    this.checkDiagonallyRight(i, column);
-    this.checkDiagonallyLeft(i, column);
   }
 
   checkVertically = (column) => {
@@ -125,14 +125,23 @@ class GameGrid extends Component {
   }
 
   checkDiagonallyRight = (row, column) => {
-    let currentRow = 0;
-    let currentColumn = 0;
+    console.log('starting point', row, column);
 
-    if(row - column >= 0) {
-      currentRow = row - column;
-    } else if(row - column < 0) {
-      currentColumn = column - row;
+    let startingRow = row;
+    let startingColumn = column;
+
+    while(startingRow !== 0 || startingColumn !== 0) {
+      if(startingRow === 0 || startingColumn === 0) {
+        break;
+      }
+      startingRow--;
+      startingColumn--;
     }
+
+    console.log(startingRow, startingColumn);
+
+    let currentRow = startingRow;
+    let currentColumn = startingColumn;
 
     let count = 0;
     let currentColor = undefined;
@@ -170,19 +179,25 @@ class GameGrid extends Component {
     }
   }
 
-  // at position [5,6] row and column in checkDiagonallyLeft is [-1, 6]
-
   checkDiagonallyLeft = (row, column) => {
-    let currentRow = 0;
-    let currentColumn = 6;
 
-    if(column === 6) {
-      currentRow = row;
-    } else if(row + column > 6) {
-      currentRow = column - 1;
-    } else if(row + column <= 6) {
-      currentColumn = row + column;
+    console.log('starting point', row, column);
+
+    let startingRow = row;
+    let startingColumn = column;
+
+    while(startingRow !== 0 || startingColumn !== 6) {
+      if(startingRow === 0 || startingColumn === 6) {
+        break;
+      }
+      startingRow -= 1;
+      startingColumn += 1;
     }
+
+    console.log(startingRow, startingColumn);
+
+    let currentRow = startingRow;
+    let currentColumn = startingColumn;
 
     let count = 0;
     let currentColor = undefined;
@@ -239,7 +254,6 @@ class GameGrid extends Component {
 
     return (
       <div>
-        <h3>Grid component</h3>
         <Grid columns={16} centered>
           {rowsAndColumns}
         </Grid>
