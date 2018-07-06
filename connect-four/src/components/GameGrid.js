@@ -47,11 +47,179 @@ class GameGrid extends Component {
       }
     }
 
-    console.log('row', i, 'column', column);
+    // console.log('row', i, 'column', column);
 
     // check for four in a row
-
+    this.checkVertically(column);
+    if(i >= 0) {
+      this.checkHorizontally(i);
+    }
+    this.checkDiagonallyRight(i, column);
+    this.checkDiagonallyLeft(i, column);
   }
+
+  checkVertically = (column) => {
+    let count = 0;
+    let currentColor;
+
+    for(let i = 0; i < this.state.grid.length; i++) {
+      if(this.state.grid[i][column] !== 0) {
+        if(currentColor === undefined) {
+          currentColor = this.state.grid[i][column];
+          count++;
+        } else {
+          if(this.state.grid[i][column] === currentColor) {
+            count++;
+          } else if(this.state.grid[i][column] !== currentColor) {
+            currentColor = this.state.grid[i][column];
+            count = 1;
+          }
+        }
+
+        if(count === 4) {
+          console.log('Winner vertically', currentColor);
+          return;
+        }
+      } else if(this.state.grid[i][column] === 0) {
+        if(count !== 0) {
+          count = 0;
+        }
+        if(currentColor !== undefined) {
+          currentColor = undefined;
+        }
+      }
+    }
+  }
+
+  checkHorizontally = (row) => {
+    let count = 0;
+    let currentColor = undefined;
+
+    for(let i = 0; i < this.state.grid[row].length; i++) {
+      if(this.state.grid[row][i] !== 0) {
+        if(currentColor === undefined) {
+          currentColor = this.state.grid[row][i];
+          count++;
+        } else {
+          if(this.state.grid[row][i] === currentColor) {
+            count++;
+          } else if(this.state.grid[row][i] !== currentColor) {
+            currentColor = this.state.grid[row][i];
+            count = 1;
+          }
+        }
+
+        if(count === 4) {
+          console.log('Winner horizontally', currentColor);
+          return;
+        }
+      } else if(this.state.grid[row][i] === 0) {
+        if(count !== 0) {
+          count = 0;
+        }
+        if(currentColor !== undefined) {
+          currentColor = undefined;
+        }
+      }
+    }
+  }
+
+  checkDiagonallyRight = (row, column) => {
+    let currentRow = 0;
+    let currentColumn = 0;
+
+    if(row - column >= 0) {
+      currentRow = row - column;
+    } else if(row - column < 0) {
+      currentColumn = column - row;
+    }
+
+    let count = 0;
+    let currentColor = undefined;
+
+    while(currentRow < this.state.grid.length && currentColumn < this.state.grid[0].length) {
+      // console.log(currentRow, currentColumn);
+      if(this.state.grid[currentRow][currentColumn] !== 0) {
+        if(currentColor === undefined) {
+          currentColor = this.state.grid[currentRow][currentColumn];
+          count++;
+        } else {
+          if(this.state.grid[currentRow][currentColumn] === currentColor) {
+            count++;
+          } else if(this.state.grid[currentRow][currentColumn] !== currentColor) {
+            currentColor = this.state.grid[currentRow][currentColumn];
+            count = 1;
+          }
+        }
+
+        if(count === 4) {
+          console.log('Winner diagonally right', currentColor);
+          return;
+        }
+      } else if(this.state.grid[currentRow][currentColumn] === 0) {
+        if(count !== 0) {
+          count = 0;
+        }
+        if(currentColor !== undefined) {
+          currentColor = undefined;
+        }
+      }
+
+      currentRow++;
+      currentColumn++;
+    }
+  }
+
+  // at position [5,6] row and column in checkDiagonallyLeft is [-1, 6]
+
+  checkDiagonallyLeft = (row, column) => {
+    let currentRow = 0;
+    let currentColumn = 6;
+
+    if(column === 6) {
+      currentRow = row;
+    } else if(row + column > 6) {
+      currentRow = column - 1;
+    } else if(row + column <= 6) {
+      currentColumn = row + column;
+    }
+
+    let count = 0;
+    let currentColor = undefined;
+
+    while(currentRow < this.state.grid.length && currentColumn >= 0) {
+      console.log('row and column in checkDiagonallyLeft', currentRow, currentColumn);
+      if(this.state.grid[currentRow][currentColumn] !== 0) {
+        if(currentColor === undefined) {
+          currentColor = this.state.grid[currentRow][currentColumn];
+          count++;
+        } else {
+          if(this.state.grid[currentRow][currentColumn] === currentColor) {
+            count++;
+          } else if(this.state.grid[currentRow][currentColumn] !== currentColor) {
+            currentColor = this.state.grid[currentRow][currentColumn];
+            count = 1;
+          }
+        }
+
+        if(count === 4) {
+          console.log('Winner diagonally left', currentColor);
+          return;
+        }
+      } else if(this.state.grid[currentRow][currentColumn] === 0) {
+        if(count !== 0) {
+          count = 0;
+        }
+        if(currentColor !== undefined) {
+          currentColor = undefined;
+        }
+      }
+
+      currentRow++;
+      currentColumn--;
+    }
+  }
+
 
   render() {
 
@@ -72,7 +240,7 @@ class GameGrid extends Component {
     return (
       <div>
         <h3>Grid component</h3>
-        <Grid columns={16} centered >
+        <Grid columns={16} centered>
           {rowsAndColumns}
         </Grid>
       </div>
