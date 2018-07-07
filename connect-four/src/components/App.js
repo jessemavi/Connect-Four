@@ -10,13 +10,22 @@ class App extends Component {
       player1Color: '',
       player2Color: '',
       currentPlayer: '',
+      gameWinner: '',
       modalOpen: false
     };
   }
 
-  updateCurrentPlayer = (currentPlayer) => {
+  updateCurrentPlayer = (currentPlayer) => this.setState({ currentPlayer: currentPlayer })
+
+  setWinner = (winner) => this.setState({ gameWinner: winner })
+
+  resetGame = async () => {
+    await this.setState({
+      gameWinner: 'reset'
+    });
+
     this.setState({
-      currentPlayer: currentPlayer
+      gameWinner: ''
     });
   }
 
@@ -35,9 +44,9 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <h2>Connect Four</h2>
+        <h1>Connect Four</h1>
         <Modal 
-          trigger={<Button onClick={this.handleOpen}>Start Game</Button>} 
+          trigger={<Button size='small' color='green' disabled={this.state.currentPlayer !== ''} onClick={this.handleOpen}>Start Game</Button>} 
           size='small'
           open={this.state.modalOpen}
         >
@@ -45,16 +54,27 @@ class App extends Component {
             <Modal.Description>
               <Header>Select a color</Header>
               <p>Player 1, select a color. Player 2 will be the other color.</p>
-              <Modal.Actions>
-                <Icon name='circle' color='red' size='huge' onClick={this.handleClose.bind(this, 'red', 'blue')} />
-                <Icon name='circle' color='blue' size='huge' onClick={this.handleClose.bind(this, 'blue', 'red')} />
-              </Modal.Actions>
+              <Icon name='circle' color='red' size='huge' onClick={this.handleClose.bind(this, 'red', 'blue')} />
+              <Icon name='circle' color='blue' size='huge' onClick={this.handleClose.bind(this, 'blue', 'red')} />
             </Modal.Description>
           </Modal.Content>
         </Modal>
 
-        <GameTracker currentPlayer={this.state.currentPlayer} player1Color={this.state.player1Color} player2Color={this.state.player2Color} />
-        <GameGrid updateCurrentPlayer={this.updateCurrentPlayer} currentPlayer={this.state.currentPlayer} player1Color={this.state.player1Color} player2Color={this.state.player2Color} />
+        <GameTracker 
+          currentPlayer={this.state.currentPlayer} 
+          player1Color={this.state.player1Color} 
+          player2Color={this.state.player2Color} 
+          gameWinner={this.state.gameWinner} 
+          resetGame={this.resetGame} 
+        />
+        <GameGrid 
+          updateCurrentPlayer={this.updateCurrentPlayer} 
+          setWinner={this.setWinner} 
+          currentPlayer={this.state.currentPlayer} 
+          player1Color={this.state.player1Color} 
+          player2Color={this.state.player2Color} 
+          gameWinner={this.state.gameWinner} 
+        />
       </div>
     );
   }

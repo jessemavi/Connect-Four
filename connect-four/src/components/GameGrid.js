@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Grid, Icon } from 'semantic-ui-react';
 import _ from 'lodash';
+import './GameGrid.css';
 
 class GameGrid extends Component {
   constructor(props) {
@@ -17,30 +18,52 @@ class GameGrid extends Component {
     };
   }
 
-  dropDisc = (row, column) => {
-    // console.log(row, column);
 
-    if(!this.props.currentPlayer) {
+  static getDerivedStateFromProps = (props, state) => {
+    if(props.gameWinner === 'reset') {
+      return {
+        grid: [
+          [0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0]
+        ] 
+      }
+    }
+    return null;
+  }
+
+  gameWon = () => {
+    if(this.props.currentPlayer === 'player1') {
+      this.props.setWinner('player2');
+    } else if(this.props.currentPlayer === 'player2') {
+      this.props.setWinner('player1');
+    }
+  }
+
+
+  dropDisc = async (row, column) => {
+    if(!this.props.currentPlayer || this.props.gameWinner !== '') {
       return;
     }
 
-    // go through the column in the grid
     const { grid } = this.state;
 
     let i;
-
     for(i = grid.length - 1; i >= 0; i--) {
       if(grid[i][column] === 0) {
         if(this.props.currentPlayer === 'player1') {
           grid[i][column] = this.props.player1Color;
-          this.setState({
+          await this.setState({
             grid: grid,
             currentPlayer: 'player2'
           });
           this.props.updateCurrentPlayer('player2');
         } else if(this.props.currentPlayer === 'player2') {
           grid[i][column] = this.props.player2Color;
-          this.setState({
+          await this.setState({
             grid: grid
           });
           this.props.updateCurrentPlayer('player1');
@@ -57,6 +80,7 @@ class GameGrid extends Component {
       this.checkDiagonallyLeft(i, column);
     }
   }
+
 
   checkVertically = (column) => {
     let count = 0;
@@ -77,8 +101,7 @@ class GameGrid extends Component {
         }
 
         if(count === 4) {
-          console.log('Winner vertically', currentColor);
-          return;
+          this.gameWon();
         }
       } else if(this.state.grid[i][column] === 0) {
         if(count !== 0) {
@@ -90,6 +113,7 @@ class GameGrid extends Component {
       }
     }
   }
+
 
   checkHorizontally = (row) => {
     let count = 0;
@@ -110,8 +134,7 @@ class GameGrid extends Component {
         }
 
         if(count === 4) {
-          console.log('Winner horizontally', currentColor);
-          return;
+          this.gameWon();
         }
       } else if(this.state.grid[row][i] === 0) {
         if(count !== 0) {
@@ -124,9 +147,8 @@ class GameGrid extends Component {
     }
   }
 
-  checkDiagonallyRight = (row, column) => {
-    console.log('starting point', row, column);
 
+  checkDiagonallyRight = (row, column) => {
     let startingRow = row;
     let startingColumn = column;
 
@@ -137,8 +159,6 @@ class GameGrid extends Component {
       startingRow--;
       startingColumn--;
     }
-
-    console.log(startingRow, startingColumn);
 
     let currentRow = startingRow;
     let currentColumn = startingColumn;
@@ -162,8 +182,7 @@ class GameGrid extends Component {
         }
 
         if(count === 4) {
-          console.log('Winner diagonally right', currentColor);
-          return;
+          this.gameWon();
         }
       } else if(this.state.grid[currentRow][currentColumn] === 0) {
         if(count !== 0) {
@@ -179,10 +198,8 @@ class GameGrid extends Component {
     }
   }
 
+
   checkDiagonallyLeft = (row, column) => {
-
-    console.log('starting point', row, column);
-
     let startingRow = row;
     let startingColumn = column;
 
@@ -194,8 +211,6 @@ class GameGrid extends Component {
       startingColumn += 1;
     }
 
-    console.log(startingRow, startingColumn);
-
     let currentRow = startingRow;
     let currentColumn = startingColumn;
 
@@ -203,7 +218,7 @@ class GameGrid extends Component {
     let currentColor = undefined;
 
     while(currentRow < this.state.grid.length && currentColumn >= 0) {
-      console.log('row and column in checkDiagonallyLeft', currentRow, currentColumn);
+      // console.log('row and column in checkDiagonallyLeft', currentRow, currentColumn);
       if(this.state.grid[currentRow][currentColumn] !== 0) {
         if(currentColor === undefined) {
           currentColor = this.state.grid[currentRow][currentColumn];
@@ -218,8 +233,7 @@ class GameGrid extends Component {
         }
 
         if(count === 4) {
-          console.log('Winner diagonally left', currentColor);
-          return;
+          this.gameWon();
         }
       } else if(this.state.grid[currentRow][currentColumn] === 0) {
         if(count !== 0) {
@@ -237,15 +251,14 @@ class GameGrid extends Component {
 
 
   render() {
-
     const rowsAndColumns = _.times(6, i => (
-      <Grid.Row key={i}>
+      <Grid.Row key={i} >
         {_.times(7, j => (
-          <Grid.Column key={j}>
+          <Grid.Column key={j} className='grid-column'>
             {this.state.grid[i][j] !== 0 ?
-              <Icon name='circle' size='big' color={this.state.grid[i][j]} onClick={this.dropDisc.bind(this, i, j)} />
+              <Icon name='circle' size='huge' color={this.state.grid[i][j]} onClick={this.dropDisc.bind(this, i, j)} />
             :
-              <Icon name='circle outline' size='big' onClick={this.dropDisc.bind(this, i, j)} />
+              <Icon name='circle outline' size='huge' onClick={this.dropDisc.bind(this, i, j)} />
             }
           </Grid.Column>
         ))}
@@ -254,7 +267,7 @@ class GameGrid extends Component {
 
     return (
       <div>
-        <Grid columns={16} centered>
+        <Grid centered={true} className='grid'>
           {rowsAndColumns}
         </Grid>
       </div>

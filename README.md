@@ -53,6 +53,11 @@ When a space on the grid is clicked and a disc is dropped
 ]
 
 
+Diagonally right:
+- if (row - column) is positive, use (row - column) as starting row on column 0 
+- if (row - column) is negative, use (column - row) as starting column on row 0
+
+
 If looking at [2,3] position and checking diagonally:
 - subtract row from column(3 - 2 = 1) and that is starting column on first row going diagonally down to the right
 - (3 + 2 = 5) so start at [0, 5] for searching diagonally down to the left
