@@ -83,32 +83,18 @@ class GameGrid extends Component {
 
 
   checkVertically = (column) => {
-    let count = 0;
-    let currentColor;
+    let count = 1;
 
-    for(let i = 0; i < this.state.grid.length; i++) {
+    for(let i = 1; i < this.state.grid.length; i++) {
       if(this.state.grid[i][column] !== 0) {
-        if(currentColor === undefined) {
-          currentColor = this.state.grid[i][column];
+        if(this.state.grid[i][column] === this.state.grid[i - 1][column]) {
           count++;
         } else {
-          if(this.state.grid[i][column] === currentColor) {
-            count++;
-          } else if(this.state.grid[i][column] !== currentColor) {
-            currentColor = this.state.grid[i][column];
-            count = 1;
-          }
+          count = 1;
         }
 
         if(count === 4) {
           this.gameWon();
-        }
-      } else if(this.state.grid[i][column] === 0) {
-        if(count !== 0) {
-          count = 0;
-        }
-        if(currentColor !== undefined) {
-          currentColor = undefined;
         }
       }
     }
@@ -116,32 +102,18 @@ class GameGrid extends Component {
 
 
   checkHorizontally = (row) => {
-    let count = 0;
-    let currentColor = undefined;
+    let count = 1;
 
-    for(let i = 0; i < this.state.grid[row].length; i++) {
+    for(let i = 1; i < this.state.grid[row].length; i++) {
       if(this.state.grid[row][i] !== 0) {
-        if(currentColor === undefined) {
-          currentColor = this.state.grid[row][i];
+        if(this.state.grid[row][i] === this.state.grid[row][i - 1]) {
           count++;
         } else {
-          if(this.state.grid[row][i] === currentColor) {
-            count++;
-          } else if(this.state.grid[row][i] !== currentColor) {
-            currentColor = this.state.grid[row][i];
-            count = 1;
-          }
+          count = 1;
         }
 
         if(count === 4) {
           this.gameWon();
-        }
-      } else if(this.state.grid[row][i] === 0) {
-        if(count !== 0) {
-          count = 0;
-        }
-        if(currentColor !== undefined) {
-          currentColor = undefined;
         }
       }
     }
@@ -267,7 +239,7 @@ class GameGrid extends Component {
 
     return (
       <div>
-        <Grid centered={true} className='grid'>
+        <Grid centered={true}>
           {rowsAndColumns}
         </Grid>
       </div>
