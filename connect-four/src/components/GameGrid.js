@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Grid, Icon } from 'semantic-ui-react';
 import _ from 'lodash';
 import './GameGrid.css';
@@ -57,8 +58,7 @@ class GameGrid extends Component {
         if(this.props.currentPlayer === 'player1') {
           grid[i][column] = this.props.player1Color;
           await this.setState({
-            grid: grid,
-            currentPlayer: 'player2'
+            grid: grid
           });
           this.props.updateCurrentPlayer('player2');
         } else if(this.props.currentPlayer === 'player2') {
@@ -68,6 +68,7 @@ class GameGrid extends Component {
           });
           this.props.updateCurrentPlayer('player1');
         }
+        this.props.incrementNumberOfPlays();
         break;
       }
     }
@@ -139,7 +140,6 @@ class GameGrid extends Component {
     let currentColor = undefined;
 
     while(currentRow < this.state.grid.length && currentColumn < this.state.grid[0].length) {
-      // console.log(currentRow, currentColumn);
       if(this.state.grid[currentRow][currentColumn] !== 0) {
         if(currentColor === undefined) {
           currentColor = this.state.grid[currentRow][currentColumn];
@@ -190,7 +190,6 @@ class GameGrid extends Component {
     let currentColor = undefined;
 
     while(currentRow < this.state.grid.length && currentColumn >= 0) {
-      // console.log('row and column in checkDiagonallyLeft', currentRow, currentColumn);
       if(this.state.grid[currentRow][currentColumn] !== 0) {
         if(currentColor === undefined) {
           currentColor = this.state.grid[currentRow][currentColumn];
@@ -246,5 +245,16 @@ class GameGrid extends Component {
     );
   }
 }
+
+
+GameGrid.propTypes = {
+  updateCurrentPlayer: PropTypes.func.isRequired,
+  incrementNumberOfPlays: PropTypes.func.isRequired,
+  setWinner: PropTypes.func.isRequired,
+  currentPlayer: PropTypes.string.isRequired,
+  player1Color: PropTypes.string.isRequired,
+  player2Color: PropTypes.string.isRequired,
+  gameWinner: PropTypes.string.isRequired
+};
 
 export default GameGrid;

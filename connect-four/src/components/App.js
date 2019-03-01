@@ -11,9 +11,12 @@ class App extends Component {
       player2Color: '',
       currentPlayer: '',
       gameWinner: '',
+      numberOfPlays: 0,
       modalOpen: false
     };
   }
+
+  incrementNumberOfPlays = () => this.setState({ numberOfPlays: this.state.numberOfPlays + 1 })
 
   updateCurrentPlayer = (currentPlayer) => this.setState({ currentPlayer: currentPlayer })
 
@@ -25,14 +28,14 @@ class App extends Component {
     });
 
     this.setState({
-      gameWinner: ''
+      gameWinner: '',
+      numberOfPlays: 0
     });
   }
 
   handleOpen = () => this.setState({ modalOpen: true })
 
   handleClose = (player1Color, player2Color) => {
-    console.log(player1Color, player2Color);
     this.setState({
       modalOpen: false,
       player1Color: player1Color,
@@ -64,11 +67,13 @@ class App extends Component {
           currentPlayer={this.state.currentPlayer} 
           player1Color={this.state.player1Color} 
           player2Color={this.state.player2Color} 
-          gameWinner={this.state.gameWinner} 
+          gameWinner={this.state.gameWinner}
+          numberOfPlays={this.state.numberOfPlays}
           resetGame={this.resetGame} 
         />
         <GameGrid 
           updateCurrentPlayer={this.updateCurrentPlayer} 
+          incrementNumberOfPlays={this.incrementNumberOfPlays}
           setWinner={this.setWinner} 
           currentPlayer={this.state.currentPlayer} 
           player1Color={this.state.player1Color} 

@@ -1,73 +1,27 @@
-Here is the challenge:
+Connect-Four Game
 
-Create a two-player Connect Four game. (Connect Four is a two-player connection game in which the players first choose a color and then take turns dropping colored discs from the top into a seven-column, six-row vertically suspended grid. The pieces fall straight down, occupying the next available space within the column. The objective of the game is to be the first to form a horizontal, vertical, or diagonal line of four of one's own discs.)
+Requirements:
+- node.js
+- yarn or npm package managers
 
-
-A few things to keep in mind when working on the challenge:
-
-- Develop it as a web page. A user should be able to run the game by opening it in a web browser without any errors.
-- Keep the code simple, readable and structured.
-- Please include a quick summary of your thought process of your code and the efficiency of your solution.
-- Add the steps to run the application in a readme.md file.
-- Please send the completed application in a compressed file to the link provided in the email.  
-- Once you submit your code, you cannot make any additional edits.
-
- 
+Running the application:
+- cd into "connect-four"
+- run "yarn install" or "npm install" to install dependencies
+- run "yarn start" or "npm start"
+- navigate to localhost:3000 in a browser
+- click on the 'Start Game' button to select a color for player 1
+- click anywhere in a column to place a disc in that column
 
 
-Plan:
-Player 1 selects color
-Player 2 selects color
+Summary:
+I separated the game into three components. One was the parent component App which keeps track of what is happening in the game in its state and passed these values down as props to its children. One child component is GameTracker which displays the current state of the game and what player's turn it is and who wins a game or if the game ends with no winner. The other child component is GameGrid which has all the logic of the grid so only keeps the current representation of the grid in its state and nothing else.
 
-Frontend:
-- App component: function passed down as props to Grid to show which player has next move. Changes state and data is passed down to Player
+Looking more closely into the GameGrid component I created a grid with 6 rows and 7 columns. The dropDisc function drops a disc into a space and then I check if there is a winner in all four directions: vertically, horizontally, diagonally down and to the right and diagonally down and to the left.
 
-- Player tracker component: shows which player is making the next move with a colored circle outline.
+The functions for checking horizontally and vertically are similar and what I'm doing is starting at the second space in that row or column and just checking if the current value matches the one before and if it reaches four in a row there is a winner. Since I'm starting at the second space in a row or column I initialize the count to 1 instead of 0.
 
-- Grid component:
-- Create grid in semantic-ui react containing circle and circle-outline icons
-- Each space has a variable for what color disc is currently there
-- Keep a grid in state to keep track of all moves and have ui grid use state values
-- Icon can only be clicked once. Use a flag variable set to false in which if false, you can place a disc there. When a disc is placed set variable to true. Or use state and a grid to keep variable in.
-- When a player has won, display a modal and reset game
+The functions to check diagonally are more complex. What I do is go to the space where I want to start. An example is if I am checking diagonally left and the space where a disc has been added is the bottom left corner I want to start checking at the top right corner so the function first finds that spot and then iterates down and to the left checking for four in a row. I am keeping track of the color at the current spot and am resetting in any case where the current value is not that color. 
 
+I also have a "getDerivedStateFromProps" function in the GameGrid component. When a game has been won or when there isn't a winner a button appears to start another game. When this button is pressed is when I wanted to clear the grid. When a game has been won players should still be able to see the grid and the winning four spaces and then when they are ready to start again, they can do so by pressing a button which clears everything.
 
-Logic:
-Create a grid with rows and columns
-When a space on the grid is clicked and a disc is dropped
-- place disk at the lowest empty spot in the grid column 
-- check for four in a row of that color in a path including the spot where disc is dropped
-- column going down
-- row going left to right
-- diagonally down to the right if possible
-- diagonally down to the left if possible
-
-
-[
-  [0,0,0,0,0,0,0],
-  [2,0,0,0,0,0,0],
-  [0,0,0,1,0,0,0],
-  [0,0,2,2,1,0,0],
-  [2,2,1,1,2,0,2],
-  [1,1,1,2,0,0,1]
-]
-
-
-Diagonally right:
-- if (row - column) is positive, use (row - column) as starting row on column 0 
-- if (row - column) is negative, use (column - row) as starting column on row 0
-
-
-If looking at [2,3] position and checking diagonally:
-- subtract row from column(3 - 2 = 1) and that is starting column on first row going diagonally down to the right
-- (3 + 2 = 5) so start at [0, 5] for searching diagonally down to the left
-
-
-If looking at [4,1] position:
-- (1 - 4 = -3) so can't start searching going diagonally down to the right
-- (1 + 4 = 5) so start at [0, 5] for searching diagonally down to the left
-
-If looking at [3, 5]
-- (5 - 3 = 2) so start at [0,2] for searching down to the right
-- (5 + 3 = 8) so can't search going diagonally down to the left as column 8 is off the board(anything over column 6 is off the board)
-
+There are a couple of places where I used an async function and await on updating state and that was so that the page first displayed the current game status and then updated it.
